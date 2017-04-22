@@ -2,7 +2,7 @@
 
 int main()
 {
-	const size_t size = 10000000;
+	const size_t size = 100000;
 	std::vector<int> vector = genRandomArray(size);
 	quickSort(vector.begin(), vector.end());
 	std::cout << "Size: " << size << ".\n";
