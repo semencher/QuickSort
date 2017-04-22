@@ -1,4 +1,5 @@
 #include "quicksort.h"
+#include <functional>
 
 int main()
 {
