@@ -4,13 +4,14 @@
 #include <ctime>
 #include <algorithm>
 #include <iostream>
+#include <future>
 
 std::vector<int> genRandomArray(size_t size);
 
 void showVectorInt(const std::vector<int> vector);
 
 template <typename RandomIt, typename Compare = std::less<>>
-void quickSort(RandomIt first, RandomIt last, Compare comp = Compare())
+void quickSort(RandomIt first, RandomIt last, size_t tCount, Compare comp = Compare())
 {
 	if (first < last) {
 		RandomIt i = first;
@@ -26,13 +27,20 @@ void quickSort(RandomIt first, RandomIt last, Compare comp = Compare())
 			}
 		}
 		if (i - first > 30) {
-			quickSort(first, i, comp);
+			if (tCount > 1) {
+				--tCount;
+				std::async(std::launch::async, quickSort<RandomIt, Compare>,
+					first, i, tCount, comp);
+			}
+			else {
+				quickSort(first, i, tCount, comp);
+			}
 		}
 		else {
 			directInsertion(first, i, comp);
 		}
 		if (last - i > 30) {
-			quickSort(i, last, comp);
+			quickSort(i, last, tCount, comp);
 		}
 		else {
 			directInsertion(i, last, comp);
