@@ -13,51 +13,44 @@ void showVectorInt(const std::vector<int> vector);
 template <typename RandomIt, typename Compare = std::less<>>
 void quickSort(RandomIt first, RandomIt last, size_t tCount, Compare comp = Compare())
 {
-	if (first < last) {
-		RandomIt i = first;
-		RandomIt j = last - 1;
-		auto x = *i;
-		while (i <= j) {
-			for (; comp(*i, x); ++i);
-			for (; comp(x, *j); --j);
-			if (i <= j) {
-				std::swap(*i, *j);
-				++i;
-				--j;
-			}
+	if (last - first <= 10) {
+		directInsertion(first, last, comp);
+		return;
+	}
+	RandomIt i = first;
+	RandomIt j = last - 1;
+	auto x = *(i + (j - i) / 2);
+	while (i <= j) {
+		for (; comp(*i, x); ++i);
+		for (; comp(x, *j); --j);
+		if (i <= j) {
+			std::swap(*i, *j);
+			++i;
+			--j;
 		}
-		if (i - first > 30) {
-			if (tCount > 1) {
-				--tCount;
-				std::async(std::launch::async, quickSort<RandomIt, Compare>,
-					first, i, tCount, comp);
-			}
-			else {
-				quickSort(first, i, tCount, comp);
-			}
-		}
-		else {
-			directInsertion(first, i, comp);
-		}
-		if (last - i > 30) {
-			quickSort(i, last, tCount, comp);
-		}
-		else {
-			directInsertion(i, last, comp);
-		}
+	}
+	if (tCount > 1) {
+		int tCountLeft = std::ceil((tCount - 1) / static_cast<double>(2));
+		std::future<void> f = std::async(std::launch::async, quickSort<RandomIt, Compare>,
+			first, i, tCountLeft, comp);
+		tCount = tCount - tCountLeft;
+		quickSort(i, last, tCount, comp);
+	}
+	else {
+		quickSort(first, i, tCount, comp);
+		quickSort(i, last, tCount, comp);
 	}
 }
 
 template <typename RandomIt, typename Compare = std::less<>>
-void directInsertion(RandomIt first, RandomIt last, Compare comp = Compare())
+void directInsertion(RandomIt first, RandomIt last, Compare comp)
 {
 	RandomIt i = first + 1;
-	RandomIt N = last;
-	while (i < N) {
+	while (i < last) {
 		RandomIt j = i - 1;
 		auto x = *i;
 		do {
-			if (j < first || !comp(x, *j)) {
+			if (!comp(x, *j)) {
 				*(j + 1) = x;
 				++i;
 				break;
