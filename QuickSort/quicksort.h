@@ -13,7 +13,7 @@ void showVectorInt(const std::vector<int> vector);
 template <typename RandomIt, typename Compare = std::less<>>
 void quickSort(RandomIt first, RandomIt last, size_t tCount, Compare comp = Compare())
 {
-	if (last - first <= 10) {
+	if (last - first <= 30) {
 		directInsertion(first, last, comp);
 		return;
 	}
@@ -43,7 +43,7 @@ void quickSort(RandomIt first, RandomIt last, size_t tCount, Compare comp = Comp
 }
 
 template <typename RandomIt, typename Compare = std::less<>>
-void directInsertion(RandomIt first, RandomIt last, Compare comp)
+void directInsertion(RandomIt first, RandomIt last, Compare comp = Compare())
 {
 	RandomIt i = first + 1;
 	while (i < last) {
